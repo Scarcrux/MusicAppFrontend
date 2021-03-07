@@ -30,9 +30,9 @@ def sigmoid(x):
 def getState(data, t, n):
     d = t - n
     block = data[d:t] if d >= 0 else np.concatenate(((-d) * [data[0]] , data[0:t]), axis = 0) # pad with t0
-    res = []
+    res = np.array([])
     for i in range(n - 1):
         diff = list(block[i + 1] - block[i])
         sigmoid(diff)
-        res.append(diff)
-    return np.array(res)
+        res = np.append(res, diff)
+    return np.reshape(res, (1, res.shape[0]))
