@@ -10,7 +10,7 @@ if len(sys.argv) != 3:
 
 stock_name, model_name = sys.argv[1], sys.argv[2]
 model = load_model("models/" + model_name + ".h5")
-window_size = model.layers[0].input.shape.as_list()[1]
+window_size = int(model.layers[0].input.shape.as_list()[1]/4)
 
 agent = Agent(window_size, True, model_name)
 data = getStockDataVec(stock_name)

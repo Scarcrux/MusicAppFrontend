@@ -25,8 +25,8 @@ class Agent:
     def _model(self):
         hidden_size = self.state_size*2
         model = Sequential()
-        model.add(Dense(hidden_size, input_shape=(self.state_size,4), activation='relu'))
-        model.add(Dense(hidden_size, activation='relu'))
+        model.add(Dense(units=hidden_size, input_dim=self.state_size*4, activation='relu'))
+        model.add(Dense(units=hidden_size, activation='relu'))
         model.add(Dense(self.action_size))
         op = tf.keras.optimizers.SGD(learning_rate=0.01, momentum=0.0, nesterov=False, name='SGD')
         model.compile(loss="mse", optimizer=op)
@@ -35,7 +35,6 @@ class Agent:
     def act(self, state):
         if not self.is_eval and random.random() <= self.epsilon:
             return random.randrange(self.action_size)
-
         options = self.model.predict(state)
         return np.argmax(options[0])
 
