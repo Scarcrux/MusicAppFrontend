@@ -44,9 +44,15 @@ jwt = JWTManager(app)
 def check_if_token_in_blacklist(decrypted_token):
     return decrypted_token["jti"] in BLACKLIST
 
-from resources.user import UserRegister
+from resources.user import UserRegister, UserConfirm, UserLogin, UserLogout
+from resources.address import Address
 
 api.add_resource(UserRegister, "/register")
+api.add_resource(UserConfirm, "/confirm/<token>")
+api.add_resource(UserLogin, "/signin")
+api.add_resource(UserLogout, "/signout")
+
+api.add_resource(Address, "/createaddress")
 
 if __name__ == "__main__":
     ma.init_app(app)

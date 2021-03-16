@@ -10,3 +10,4 @@ class EventSchema(ma.SQLAlchemyAutoSchema):
         model = EventModel
         dump_only = ("id",)
         include_fk = True
+        load_instance = True

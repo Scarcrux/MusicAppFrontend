@@ -8,3 +8,4 @@ class CommentSchema(ma.SQLAlchemyAutoSchema):
         model = CommentModel
         dump_only = ("id",)
         include_fk = True
+        load_instance = True

@@ -3,7 +3,7 @@ MAIL_DEFAULT_SENDER = 'yuyingsudevtesting@gmail.com'
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_PORT = 465
 MAIL_USERNAME = 'yuyingsudevtesting@gmail.com'
-MAIL_PASSWORD = 'Devtesting'
+MAIL_PASSWORD = 'OrangeCat1994'
 MAIL_USE_TLS = False
 MAIL_USE_SSL = True
 

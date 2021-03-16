@@ -1,23 +1,30 @@
 from libs.strings import gettext
 from models.address import AddressModel
+from schemas.address import AddressSchema
+from flask_restful import Resource
+from flask import request
 
 address_schema = AddressSchema()
 
 class Address(Resource):
 
     @classmethod
-    @fresh_jwt_required
-    def post(cls, street_name: str, city: str, state: str, zip: int ):
-        if AddressModel.query.filter_by(street_name=street_name, city=city, state=state, zip=zip):
+    def post(cls):
+        address_json = request.get_json()
+
+        streetName = address_json["streetName"]
+        city = address_json["city"]
+        state = address_json["state"] 
+        zip = address_json["zip"]
+
+        print(streetName)
+
+        if AddressModel.query.filter_by(streetName=streetName, city=city, state=state, zip=zip).first():
             return {"message": gettext("address_exists")}, 400
 
-        address_json = request.get_json()
-        address_json["street_name"] = street_name
-        address_json["city"] = city
-        address_json["state"] = state
-        address_json["zip"] = zip
-
         address = address_schema.load(address_json)
+
+        address.save_to_db()
 
         try:
             address.save_to_db()

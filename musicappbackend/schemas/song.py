@@ -10,3 +10,4 @@ class SongSchema(ma.SQLAlchemyAutoSchema):
         model = SongModel
         dump_only = ("id",)
         include_fk = True
+        load_instance = True

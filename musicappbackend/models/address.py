@@ -8,11 +8,6 @@ class AddressModel(db.Model):
     city = db.Column(db.String(80), nullable=False)
     state = db.Column(db.String(80), nullable=False)
     zip = db.Column(db.Integer, nullable=False)
-
-    #each event takes part in one address. each address can hold multiple events at different times.(One-to-Many Relationship)
-    events = db.relationship('EventModel', backref='address', lazy=True)
-    #one user has one address, each address belongs to one user(One-to-One Relationship)
-    user_id =  db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     
     @classmethod
     def find_by_id(cls, _id: int) -> "AddressModel":

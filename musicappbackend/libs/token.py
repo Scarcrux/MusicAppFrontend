@@ -16,3 +16,4 @@ def confirm_verification_token(token, expiration=3600):
     except Exception as e :
         return e
     return email
+

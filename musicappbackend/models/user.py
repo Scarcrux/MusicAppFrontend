@@ -1,12 +1,13 @@
 from requests import Response
 from flask import request, url_for
-
 from models.address import AddressModel
 from models.comment import CommentModel
 from models.event import EventModel
 from models.list import ListModel
 from models.listlike import ListLikeModel
 from models.userevent import UserEventModel
+from models.song import SongModel
+from werkzeug.security import check_password_hash
 
 from db import db
 
@@ -16,7 +17,7 @@ class UserModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     isVerified = db.Column(db.Boolean, nullable=False, default=False)
     username = db.Column(db.String(80), nullable=False, unique=True)
-    password = db.Column(db.String(80), nullable=False)
+    password = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(80), nullable=False, unique=True)
     bio = db.Column(db.String(200))
     
@@ -54,14 +55,9 @@ class UserModel(db.Model):
     @classmethod
     def find_by_id(cls, _id: int) -> "UserModel":
         return cls.query.filter_by(id=_id).first()
-    
-    @staticmethod
-    def generate_hash(password):
-        return sha256.hash(password)
- 
-    @staticmethod
-    def verify_hash(password, hash):
-        return sha256.verify(password, hash)
+
+    def verify_hash(self,password):
+        return check_password_hash(self.password,password)
 
     def sign_up_event(clf, event_id):
         if not self.has_signed_up_event(event_id):

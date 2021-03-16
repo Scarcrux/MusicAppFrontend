@@ -1,6 +1,8 @@
 from flask_restful import Resource
+from flask import url_for
 from flask import Response
 from flask import request
+from flask import render_template_string
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -9,6 +11,7 @@ from flask_jwt_extended import (
     jwt_required,
     get_raw_jwt,
 )
+from werkzeug.security import generate_password_hash
 from models.user import UserModel
 from schemas.user import UserSchema
 from blacklist import BLACKLIST
@@ -17,6 +20,7 @@ from libs.token import (
     generate_verification_token, 
     confirm_verification_token
 )
+from libs.email import send_email
 
 user_schema = UserSchema()
 user_list_schema = UserSchema(many=True)
@@ -26,17 +30,19 @@ class UserRegister(Resource):
     def post(cls):
         try:
             user_json = request.get_json()
+            password = generate_password_hash(user_json['password'])
+            user_json['password'] = password
             user = user_schema.load(user_json)
-            password = User.generate_hash(user.password)
             token = generate_verification_token(user.email)
 
-            if UserModel.find_by_username(user.username):
+            if UserModel.find_by_username(user.password):
                 return {"message": gettext("user_username_exists")}, 400
 
             if UserModel.find_by_email(user.email):
                 return {"message": gettext("user_email_exists")}, 400
 
-            verification_email = verify_email(token)
+            user
+            verification_email = "http://127.0.0.1:5000/confirm/"+token
             html = render_template_string("<p>Welcome! Thanks for \
             signing up. Please follow this link to activate your \
             account:</p> <p><a href='{{ verification_email }}'>{{ \
@@ -45,15 +51,15 @@ class UserRegister(Resource):
             subject = "Please Verify your email"
             send_email(user.email, subject, html)
 
-            result = user_schema.dump(user.save_to_db()).user
+            user.save_to_db()
             return {"message": gettext("user_registered")}, 201
 
         except Exception as e:
             print(e)
             return {"message": gettext("user_invalid_input")}, 402
-    
-    @classmethod
-    def verify_email( cls, token: str ) -> Response:
+
+class UserConfirm(Resource):
+    def get( cls, token: str ) -> Response:
         try:
            email = confirm_verification_token(token)
         except:
@@ -70,17 +76,16 @@ class UserLogin(Resource):
     @classmethod
     def post(cls):
         user_json = request.get_json()
-        user_data = user_schema.load(user_json, partial=("email",))
 
-        user = UserModel.find_by_username(user_data.username)
+        user = UserModel.find_by_username(user_json['username'])
 
         if not user:
             return {"message": gettext("user_not_existed")}, 404
 
         if user and not user.isVerified:
             return {"message": gettext("user_not_confirmed")}, 400
-        
-        if UserModel.verify_hash(user.password, user_data.password):
+
+        if user.verify_hash(user_json['password']):
             access_token = create_access_token(user.id, fresh=True)
             refresh_token = create_refresh_token(user.id)
             return (

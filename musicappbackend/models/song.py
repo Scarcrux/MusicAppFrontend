@@ -1,8 +1,6 @@
 from db import db
-from models.songlist import SongListModel
 
 class SongModel(db.Model):
-
     __tablename__ = "song" 
 
     id = db.Column(db.Integer, primary_key=True)

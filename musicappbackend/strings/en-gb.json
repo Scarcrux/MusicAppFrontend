@@ -30,6 +30,7 @@
     "user_username_exists": "A user with that username already exists.",
     "user_email_exists": "A user with that email already exists.",
     "user_invalid_input": "Invalid input!",
+    "user_invalid_credentials": "user_invalid_credentials",
     "user_verification_token_invalid": "The verfication token is invalid",
     "user_duplicate_verification": "The user already confirmed his email.",
     "user_email_verification_success": "The user confirmed his email successfully.",

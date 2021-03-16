@@ -10,3 +10,4 @@ class ListSchema(ma.SQLAlchemyAutoSchema):
         model = ListModel
         dump_only = ("id",)
         include_fk = True
+        load_instance = True

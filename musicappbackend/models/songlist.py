@@ -2,7 +2,7 @@ from db import db
 
 class SongListModel(db.Model):
     __tablename__ = "songlist"
-    
+
     id = db.Column(db.Integer, primary_key=True)
     song_id = db.Column(db.Integer, db.ForeignKey('song.id'), primary_key = True)
     list_id = db.Column(db.Integer, db.ForeignKey('list.id'), primary_key = True)
