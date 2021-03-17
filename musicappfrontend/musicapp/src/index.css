@@ -1,0 +1,28 @@
+.each-slide{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  height: 550px;
+  margin-top: 80px;
+}
+
+.each-slide span {
+  padding: 5px;
+  font-size: 140px;
+  font-weight: bolder;
+  color: aliceblue;
+}
+
+#meetup {
+  background-image: url('assets/img/friend.jpg');
+}
+
+#explore {
+  background-image: url('assets/img/zebra.jpg');
+}
+
+#share {
+  background-image: url('assets/img/zebra1.jpg');
+}
+
