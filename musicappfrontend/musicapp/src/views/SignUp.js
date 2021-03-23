@@ -16,19 +16,6 @@ import { register } from '../actions/userActions';
 import { createAddress } from '../actions/addressActions';
 import { useHistory } from "react-router-dom";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Tangerine Music
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(15),
@@ -66,12 +53,12 @@ export default function SignUp() {
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(createAddress(streetname, city, state, zip));
-    
     dispatch(register(username, email, password, null, addressId));
     history.go(-1);
   }
 
   return (
+    <div style={{height:"600px"}}>
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
@@ -183,9 +170,7 @@ export default function SignUp() {
           </Grid>
         </form>
       </div>
-      <Box mt={5}>
-        <Copyright />
-      </Box>
     </Container>
+    </div>
   );
 }

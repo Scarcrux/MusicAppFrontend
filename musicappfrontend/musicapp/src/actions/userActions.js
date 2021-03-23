@@ -10,6 +10,18 @@ import {
   USER_SIGNIN_REQUEST,
   USER_SIGNIN_SUCCESS,
   USER_SIGNIN_FAIL,
+  GET_BIO_REQUEST,
+  GET_BIO_SUCCESS,
+  GET_BIO_FAIL,
+  UPDATE_BIO_REQUEST,
+  UPDATE_BIO_SUCCESS,
+  UPDATE_BIO_FAIL,
+  UPLOAD_PIC_REQUEST,
+  UPLOAD_PIC_SUCCESS,
+  UPLOAD_PIC_FAIL,
+  GET_PIC_REQUEST,
+  GET_PIC_SUCCESS,
+  GET_PIC_FAIL
 } from "../constants/userConstants";
 
 
@@ -34,7 +46,6 @@ const register = (username, email, password, bio, addressId) => async (dispatch)
   try {
     const { data } = await Axios.post("http://127.0.0.1:5000/register", { username, email, password, bio, address_id: addressId});
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
-    Cookie.set('userInfo', JSON.stringify(data));
   } catch (error) {
     dispatch({ type: USER_REGISTER_FAIL, payload: error.message });
   }
@@ -51,8 +62,72 @@ const signin = (username, password) => async (dispatch) => {
   }
 }
 
+const updateBio = (bio) => async (dispatch, getState) => {
+  const { userSignin: { userInfo } } = getState();
+  const user_id = userInfo.user_id;
+  dispatch({ type: UPDATE_BIO_REQUEST});
+  try {
+    const { data } = await Axios.post("http://127.0.0.1:5000/updatebio/"+user_id, { bio }, {
+      headers: {
+        "Authorization": ' Bearer ' + userInfo.access_token
+      }
+    });
+    dispatch({ type: UPDATE_BIO_SUCCESS, payload: data });
+  } catch (error) {
+    console.log(error.response)
+    dispatch({ type: UPDATE_BIO_FAIL, payload: error.message });
+  }
+}
+
+const getBio = () => async (dispatch, getState) => {
+  const { userSignin: { userInfo } } = getState();
+  const user_id = userInfo.user_id;
+  dispatch({ type: GET_BIO_REQUEST});
+  try {
+    const { data } = await Axios.get("http://127.0.0.1:5000/userbio/"+user_id, {});
+    dispatch({ type: GET_BIO_SUCCESS, payload: data });
+  } catch (error) {
+    console.log(error.response)
+    dispatch({ type: GET_BIO_FAIL, payload: error.message });
+  }
+}
+
+const uploadPic = (data1) => async (dispatch, getState) => {
+  const { userSignin: { userInfo } } = getState();
+  dispatch({ type: UPLOAD_PIC_REQUEST});
+  try {
+    const { data } = await Axios.put("http://127.0.0.1:5000/upload/avatar", data1, {
+      headers: {
+      "Authorization": ' Bearer ' + userInfo.access_token,
+      'Content-Type': 'multipart/form-data'
+    }
+    })
+    dispatch({ type: UPLOAD_PIC_SUCCESS, payload: data });
+  } catch (error) {
+    console.log(error.response)
+    dispatch({ type: UPLOAD_PIC_FAIL, payload: error.message });
+  }
+}
+
+const userPic = () => async (dispatch, getState) => {
+  const { userSignin: { userInfo } } = getState();
+  const user_id = userInfo.user_id;
+  dispatch({ type: GET_PIC_REQUEST});
+  try {
+    const { data } = await Axios.get("http://127.0.0.1:5000/avatar/1", {});
+    dispatch({ type: GET_PIC_SUCCESS, payload: data });
+  } catch (error) {
+    console.log(error.response);
+    dispatch({ type: GET_PIC_FAIL, payload: error.message });
+  }
+}
+
 export {
   logout,
   register,
-  signin
+  signin,
+  updateBio,
+  getBio,
+  uploadPic,
+  userPic
 };

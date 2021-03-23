@@ -46,7 +46,7 @@ const NavbarIndex = (props) => {
         <Collapse isOpen={isOpen} navbar>
           <Nav className="mr-auto" navbar>
             <NavItem>
-              <NavLink href="/lists" style={{color: "#F08080"}}>Music List</NavLink>
+              <NavLink href="/lists" style={{color: "#F08080"}}>PlayList</NavLink>
             </NavItem>
             <NavItem>
               <NavLink href="/events" style={{color: "#F08080"}}>Event</NavLink>
@@ -55,7 +55,7 @@ const NavbarIndex = (props) => {
               <NavLink href="/explore" style={{color: "#F08080"}}>Explore</NavLink>
             </NavItem>
             <NavItem>
-              {userInfo ? <NavLink tag={Link} to="/profile" onClick={(e)=>{handleLogout(e)}} style={{color: "#F08080"}}>Profile</NavLink> : null}
+              {userInfo ? <NavLink tag={Link} to="/profile" style={{color: "#F08080"}}>Profile</NavLink> : null}
             </NavItem>
           </Nav>
           <Nav>

@@ -7,7 +7,6 @@ function LandingPage() {
   return(
   <div>
       <Slide></Slide>
-      <FooterPage></FooterPage>
   </div>);
     }
 
