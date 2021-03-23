@@ -8,6 +8,18 @@ import {
     USER_SIGNIN_REQUEST,
     USER_SIGNIN_SUCCESS,
     USER_SIGNIN_FAIL,
+    GET_BIO_REQUEST,
+    GET_BIO_SUCCESS,
+    GET_BIO_FAIL,
+    UPDATE_BIO_REQUEST,
+    UPDATE_BIO_SUCCESS,
+    UPDATE_BIO_FAIL,
+    GET_PIC_REQUEST,
+    GET_PIC_SUCCESS,
+    GET_PIC_FAIL,
+    UPLOAD_PIC_REQUEST,
+    UPLOAD_PIC_SUCCESS,
+    UPLOAD_PIC_FAIL,
   } from "../constants/userConstants";
   
 
@@ -41,7 +53,45 @@ import {
     }
   }
   
+  function userBioReducer(state = {}, action) {
+    switch (action.type) {
+      case GET_BIO_REQUEST:
+        return { loading: true };
+      case GET_BIO_SUCCESS:
+        return { loading: false, bio: action.payload };
+      case GET_BIO_FAIL:
+        return { loading: false, error: action.payload };
+      case UPDATE_BIO_REQUEST:
+          return { loading: true };
+      case UPDATE_BIO_SUCCESS:
+          return { loading: false, bio: action.payload };
+      case UPDATE_BIO_FAIL:
+          return { loading: false, error: action.payload };
+      default: return state;
+    }
+  }
+
+  function userPicReducer(state = {}, action) {
+    switch (action.type) {
+      case GET_PIC_REQUEST:
+        return { loading: true };
+      case GET_PIC_SUCCESS:
+        return { loading: false, pic: action.payload };
+      case GET_PIC_FAIL:
+        return { loading: false, error: action.payload };
+      case UPLOAD_PIC_REQUEST:
+          return { loading: true };
+      case UPLOAD_PIC_SUCCESS:
+          return { loading: false, pic: action.payload['image'] };
+      case UPLOAD_PIC_FAIL:
+          return { loading: false, error: action.payload };
+      default: return state;
+    }
+  }
+  
   export {
     userRegisterReducer,
-    userSigninReducer
+    userSigninReducer,
+    userBioReducer,
+    userPicReducer
   }

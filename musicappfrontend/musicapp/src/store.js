@@ -3,13 +3,17 @@ import thunk from "redux-thunk";
 import {
   userSigninReducer,
   userRegisterReducer,
+  userBioReducer,
+  userPicReducer,
 } from './reducers/userReducers';
 import {
   createAddressReducer
 } from './reducers/addressReducers';
+import {
+  allListReducer, createListReducer, singleListReducer
+} from './reducers/listReducers';
+
 import Cookie from 'js-cookie';
-import { persistStore, persistReducer } from 'redux-persist'
-import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
 
 const userInfo = Cookie.getJSON('userInfo') || null;
 
@@ -20,20 +24,20 @@ const initialState = {
 const rootReducer = combineReducers({
   userSignin: userSigninReducer,
   userRegister: userRegisterReducer,
-  createAddress: createAddressReducer
+  createAddress: createAddressReducer,
+  createList: createListReducer,
+  allList: allListReducer,
+  singleList: singleListReducer,
+  userBio: userBioReducer,
+  userPic: userPicReducer
 });
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const storeEnhancers = window.REDUX_DEVTOOLS_EXTENSION_COMPOSE || compose;
 
-const persistConfig = {
-  key: 'root',
-  storage,
-}
+const store = createStore(
+  rootReducer,
+  initialState,
+  storeEnhancers(applyMiddleware(thunk))
+);
 
-const persistedReducer = persistReducer(persistConfig, rootReducer)
-
-export default () => {
-  let store = createStore(persistedReducer, initialState, composeEnhancers(applyMiddleware(thunk)))
-  let persistor = persistStore(store)
-  return { store, persistor }
-}
+export default store;

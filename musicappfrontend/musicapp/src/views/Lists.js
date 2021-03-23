@@ -1,45 +1,37 @@
 import React, { useEffect } from 'react';
-import { listLists } from '../actions/listActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
+import { allLists } from "../actions/listActions";
+import CardList from "../components/CardList";
 
 function Lists(props) {
   const dispatch = useDispatch();
-  const listList = useSelector(state => state.listList);
-  const { loading: loadingLists, lists, error: errorLists } = listList;
+  const allListReducer = useSelector((state) => state.allList);
+  const { lists } = allListReducer;
 
   useEffect(() => {
-    dispatch(listLists());
-    return () => {};
+    dispatch(allLists());
   }, [])
 
-  return 
-  /*<div className="orgs content-margined">
-  { loadingOrgs ? <div>Loading...</div> :
-    errorOrgs ? <div>{errorOrgs}</div> :
-      <Container style={{marginTop: "40px", paddingTop: "30px", paddingBottom:"20px"}} fluid>
+  return(
+  <div>
+  { !lists ? <div>Loading...</div> :
+      <Container style={{marginTop: "80px", height:"562px"}} fluid>
         <Row className="d-flex justify-content-center align-items-center">
           <h5 style={{color:"white"}}>
-            Organizations
+            PlayLists
           </h5>
         </Row>
         <Row>
-          {orgs.map(org =>
-            <Col xs="4" style={{marginBottom:"30px"}}>
-              <CardOrg id={org.id}
-                public={true}
-                name={org.organization_name}
-                address={org.address}
-                phone={org.phone}
-                type={org.type}
-                url={org.url}
-              />
+        {lists['lists'].map(list =>
+            <Col xs="3" style={{}}>
+              <CardList title={list.title} id={list.id}/>
             </Col>
           )}
         </Row>
       </Container>
   }
-  </div>*/
-}
+  </div>)
+};
 
 export default Lists;
