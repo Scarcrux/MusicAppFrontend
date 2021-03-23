@@ -1,6 +1,6 @@
 from db import db
 from models.listlike import ListLikeModel
-from models.songlist import SongListModel
+from models.song import SongModel
 
 class ListModel(db.Model):
     __tablename__ = "list"
@@ -18,12 +18,16 @@ class ListModel(db.Model):
     likes = db.relationship('ListLikeModel', backref='list', lazy='dynamic')
 
     songs = db.relationship(
-        'SongListModel', backref='list', lazy='dynamic')
-
+        'SongModel', backref='list', lazy=True, cascade="all, delete-orphan")
 
     @classmethod
     def find_by_id(cls, _id: int) -> "ListModel":
         return cls.query.filter_by(id=_id).first()
+
+    @classmethod
+    def find_all(cls) -> "ListModel":
+        return cls.query.filter_by()
+    
 
     def save_to_db(self) -> None:
         db.session.add(self)

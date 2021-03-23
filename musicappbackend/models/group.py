@@ -1,19 +1,15 @@
 from db import db
 
-class SongModel(db.Model):
-    __tablename__ = "song" 
+class GroupModel(db.Model):
+    __tablename__ = "events"
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80), nullable=False)
-    artist = db.Column(db.String(80), nullable=False)
-
-    list_id = db.Column(db.Integer, db.ForeignKey('list.id'),
-        nullable=False)
+    name = db.Column(db.String(80), nullable=False)
 
     @classmethod
-    def find_by_id(cls, _id: int) -> "SongModel":
+    def find_by_id(cls, _id: int) -> "GroupModel":
         return cls.query.filter_by(id=_id).first()
-    
+
     def save_to_db(self) -> None:
         db.session.add(self)
         db.session.commit()

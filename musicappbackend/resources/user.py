@@ -13,6 +13,7 @@ from flask_jwt_extended import (
 )
 from werkzeug.security import generate_password_hash
 from models.user import UserModel
+from models.listlike import ListLikeModel
 from schemas.user import UserSchema
 from blacklist import BLACKLIST
 from libs.strings import gettext
@@ -76,9 +77,8 @@ class UserLogin(Resource):
     @classmethod
     def post(cls):
         user_json = request.get_json()
-
         user = UserModel.find_by_username(user_json['username'])
-
+     
         if not user:
             return {"message": gettext("user_not_existed")}, 404
 
@@ -89,7 +89,9 @@ class UserLogin(Resource):
             access_token = create_access_token(user.id, fresh=True)
             refresh_token = create_refresh_token(user.id)
             return (
-                    {"access_token": access_token, "refresh_token": refresh_token},
+                    {"access_token": access_token, "refresh_token": refresh_token,
+                    "username": user.username, "user_id" : user.id
+                    },
                     200,
                 )
 
@@ -118,16 +120,28 @@ class LikeList(Resource):
     @classmethod
     @jwt_refresh_token_required
     def post(cls, list_id):
-        current_user = get_jwt_identity()
-        current_user.like_post(list_id)
+        user_id = get_jwt_identity()
+        current_user = UserModel.find_by_id(user_id)
+        current_user.like_list(list_id)
         return {"message": gettext("user_liked").format(user_id)}, 200
+
+class LikedList(Resource):
+    @classmethod
+    @jwt_refresh_token_required
+    def get(cls, list_id):
+         user_id = get_jwt_identity()
+         if ListLikeModel.query.filter_by(user_id=user_id, list_id=list_id).first():
+            return True
+         else:
+            return False
 
 class UnlikeList(Resource):
     @classmethod
     @jwt_refresh_token_required
     def post(cls, list_id):
-        current_user = get_jwt_identity()
-        current_user.unlike_post(list_id)
+        user_id = get_jwt_identity()
+        current_user = UserModel.find_by_id(user_id)
+        current_user.unlike_list(list_id)
         return {"message": gettext("user_unliked").format(user_id)}, 200
 
 class SignUpEvent(Resource):
@@ -151,6 +165,21 @@ class ListByMember(Resource):
     def get(cls, user_id):
         user = UserModel.query.filter_by(id=user_id).first()
         return {"lists": user_list_schema.dump(user.lists)}, 200
+
+class GetUserBio(Resource):
+    @classmethod
+    def get(cls, user_id):
+        user = UserModel.find_by_id(user_id)
+        return {"bio": user_schema.dump(user)["bio"]}, 200
+
+class UpdateUserBio(Resource):
+    @classmethod
+    @jwt_required
+    def post(cls, user_id):
+        user = UserModel.find_by_id(user_id)
+        user.bio = request.get_json()["bio"]
+        user.save_to_db()
+        return {"bio": user_schema.dump(user)["bio"]}, 200
 
 
 

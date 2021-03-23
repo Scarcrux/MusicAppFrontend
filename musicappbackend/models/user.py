@@ -75,7 +75,7 @@ class UserModel(db.Model):
             UserEventModel.user_id == self.id,
             UserEventModel.event_id == event_id).count() > 0
 
-    def like_list(clf, list_id):
+    def like_list(self, list_id):
         if not self.has_liked_list(list_id):
             like = ListLikeModel(user_id=self.id, list_id=list_id)
             like.save_to_db()
@@ -84,12 +84,12 @@ class UserModel(db.Model):
         if self.has_liked_list(list_id):
             ListLikeModel.query.filter_by(
                 user_id=self.id,
-                list_id=list_id).delete_from_db()
+                list_id=list_id).first().delete_from_db()
 
     def has_liked_list(self, list_id):
         return ListLikeModel.query.filter(
-            ListLike.user_id == self.id,
-            ListLike.list_id == list_id).count() > 0
+            ListLikeModel.user_id == self.id,
+            ListLikeModel.list_id == list_id).count() > 0
 
     def save_to_db(self):
         db.session.add(self)

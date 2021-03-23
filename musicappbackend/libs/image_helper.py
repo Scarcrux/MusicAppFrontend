@@ -2,6 +2,7 @@ import os
 import re
 from typing import Union
 from werkzeug.datastructures import FileStorage
+from flask import current_app
 
 from flask_uploads import UploadSet, IMAGES
 
@@ -16,21 +17,14 @@ def get_path(filename: str = None, folder: str = None) -> str:
     return IMAGE_SET.path(filename, folder)
 
 
-def find_image_any_format(filename: str, folder: str) -> Union[str, None]:
-    """
-    Given a format-less filename, try to find the file by appending each of the allowed formats to the given
-    filename and check if the file exists
-    :param filename: formatless filename
-    :param folder: the relative folder in which to search
-    :return: the path of the image if exists, otherwise None
-    """
-    for _format in IMAGES:  # look for existing avatar and delete it
-        avatar = f"{filename}.{_format}"
-        avatar_path = IMAGE_SET.path(filename=avatar, folder=folder)
-        if os.path.isfile(avatar_path):
+def is_image_existed(folder: str, id:int) -> Union[str, None]:
+    
+    names = os.listdir(os.path.join(current_app.static_folder, 'images/'+folder))
+    for file in names:
+        if file.startswith("user_"+str(id)+"_"):
+            avatar_path = IMAGE_SET.path(filename=file, folder=folder) 
             return avatar_path
-    return None
-
+    return False
 
 def _retrieve_filename(file: Union[str, FileStorage]) -> str:
     """
