@@ -1,5 +1,5 @@
 from ma import ma
-from models.event import EventModel
+from models.user import EventModel
 from marshmallow_sqlalchemy import ModelSchema
 
 class EventSchema(ma.SQLAlchemyAutoSchema):

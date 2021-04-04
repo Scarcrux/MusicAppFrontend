@@ -1,5 +1,4 @@
 from db import db
-from models.event import EventModel
 
 class AddressModel(db.Model):
     __tablename__ = "address"

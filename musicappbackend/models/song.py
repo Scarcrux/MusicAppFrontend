@@ -1,14 +1,17 @@
 from db import db
 
+lists_songs = db.Table(
+    "lists_songs",
+    db.Column("list_id", db.Integer, db.ForeignKey("list.id")),
+    db.Column("song_id", db.Integer, db.ForeignKey("song.id")),
+)
+
 class SongModel(db.Model):
     __tablename__ = "song" 
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80), nullable=False)
     artist = db.Column(db.String(80), nullable=False)
-
-    list_id = db.Column(db.Integer, db.ForeignKey('list.id'),
-        nullable=False)
 
     @classmethod
     def find_by_id(cls, _id: int) -> "SongModel":

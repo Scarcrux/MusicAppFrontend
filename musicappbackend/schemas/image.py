@@ -16,6 +16,5 @@ class FileStorageField(fields.Field):
 
         return value
 
-
 class ImageSchema(Schema):
     image = FileStorageField(required=True)

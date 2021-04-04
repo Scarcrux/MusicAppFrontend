@@ -17,14 +17,12 @@ class Address(Resource):
         state = address_json["state"] 
         zip = address_json["zip"]
 
-        print(streetName)
-
-        if AddressModel.query.filter_by(streetName=streetName, city=city, state=state, zip=zip).first():
-            return {"message": gettext("address_exists")}, 400
+        address = AddressModel.query.filter_by(streetName=streetName, city=city, state=state, zip=zip).first()
+        
+        if address:
+            return address_schema.dump(address), 200
 
         address = address_schema.load(address_json)
-
-        address.save_to_db()
 
         try:
             address.save_to_db()
@@ -33,3 +31,9 @@ class Address(Resource):
 
         return address_schema.dump(address), 201
 
+class GetAddress(Resource):
+    @classmethod
+    def get(cls, id):
+        if not AddressModel.find_by_id(id):
+            return {"message": gettext("address_not_existed")}, 404
+        return address_schema.dump(AddressModel.find_by_id(id)), 200

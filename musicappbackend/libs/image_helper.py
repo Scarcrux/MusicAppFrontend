@@ -24,7 +24,7 @@ def is_image_existed(folder: str, id:int) -> Union[str, None]:
         if file.startswith("user_"+str(id)+"_"):
             avatar_path = IMAGE_SET.path(filename=file, folder=folder) 
             return avatar_path
-    return False
+    return None
 
 def _retrieve_filename(file: Union[str, FileStorage]) -> str:
     """

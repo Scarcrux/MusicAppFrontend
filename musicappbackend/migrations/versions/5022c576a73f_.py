@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: d99c5cca511a
+Revision ID: 5022c576a73f
 Revises: 
-Create Date: 2021-03-19 14:06:45.602978
+Create Date: 2021-04-03 16:25:52.879333
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'd99c5cca511a'
+revision = '5022c576a73f'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -26,13 +26,10 @@ def upgrade():
     sa.Column('zip', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('event',
+    op.create_table('song',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('headline', sa.String(length=80), nullable=False),
-    sa.Column('description', sa.String(length=80), nullable=False),
-    sa.Column('date', sa.DateTime(), nullable=False),
-    sa.Column('address_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['address_id'], ['address.id'], ),
+    sa.Column('title', sa.String(length=80), nullable=False),
+    sa.Column('artist', sa.String(length=80), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('user',
@@ -42,34 +39,48 @@ def upgrade():
     sa.Column('password', sa.String(length=128), nullable=False),
     sa.Column('email', sa.String(length=80), nullable=False),
     sa.Column('bio', sa.String(length=200), nullable=True),
-    sa.Column('address_id', sa.Integer(), nullable=False),
+    sa.Column('address_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['address_id'], ['address.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('username')
+    )
+    op.create_table('event',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('headline', sa.String(length=80), nullable=False),
+    sa.Column('description', sa.String(length=80), nullable=False),
+    sa.Column('date', sa.DateTime(), nullable=False),
+    sa.Column('address_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['address_id'], ['address.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('friendrequest',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('from_user_id', sa.Integer(), nullable=True),
+    sa.Column('to_user_id', sa.Integer(), nullable=True),
+    sa.Column('from_user_name', sa.String(length=80), nullable=False),
+    sa.Column('date', sa.DateTime(), nullable=False),
+    sa.Column('status', sa.String(length=80), nullable=False),
+    sa.ForeignKeyConstraint(['from_user_id'], ['user.id'], ),
+    sa.ForeignKeyConstraint(['to_user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('friendship',
+    sa.Column('user1_id', sa.Integer(), nullable=False),
+    sa.Column('user2_id', sa.Integer(), nullable=False),
+    sa.Column('user1_name', sa.String(length=80), nullable=False),
+    sa.Column('user2_name', sa.String(length=80), nullable=False),
+    sa.ForeignKeyConstraint(['user1_id'], ['user.id'], ),
+    sa.ForeignKeyConstraint(['user2_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('user1_id', 'user2_id')
     )
     op.create_table('list',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=80), nullable=False),
     sa.Column('category', sa.String(length=80), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('userevent',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('event_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('id', 'user_id', 'event_id')
-    )
-    op.create_table('comment',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('content', sa.String(length=80), nullable=False),
-    sa.Column('list_id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['list_id'], ['list.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -81,25 +92,31 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('song',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('title', sa.String(length=80), nullable=False),
-    sa.Column('artist', sa.String(length=80), nullable=False),
-    sa.Column('list_id', sa.Integer(), nullable=False),
+    op.create_table('lists_songs',
+    sa.Column('list_id', sa.Integer(), nullable=True),
+    sa.Column('song_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['list_id'], ['list.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.ForeignKeyConstraint(['song_id'], ['song.id'], )
+    )
+    op.create_table('users_events',
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('event_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], )
     )
     # ### end Alembic commands ###
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_table('song')
+    op.drop_table('users_events')
+    op.drop_table('lists_songs')
     op.drop_table('listlike')
-    op.drop_table('comment')
-    op.drop_table('userevent')
     op.drop_table('list')
-    op.drop_table('user')
+    op.drop_table('friendship')
+    op.drop_table('friendrequest')
     op.drop_table('event')
+    op.drop_table('user')
+    op.drop_table('song')
     op.drop_table('address')
     # ### end Alembic commands ###
