@@ -18,7 +18,7 @@ import CardHeader from "../components/Card/CardHeader.js";
 import CardAvatar from "../components/Card/CardAvatar.js";
 import CardBody from "../components/Card/CardBody.js";
 import CardFooter from "../components/Card/CardFooter.js";
-import { SettingsInputComponent } from '@material-ui/icons';
+import { useHistory } from "react-router-dom";
 
 const styles = {
   cardCategoryWhite: {
@@ -44,24 +44,33 @@ const useStyles = makeStyles(styles);
 function UserProfile() {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const history = useHistory();
   const [value, setValue] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const getBioReducer = useSelector((state) => state.userBio);
   const getPicReducer = useSelector((state) => state.userPic);
   const userSignInReducer = useSelector((state) => state.userSignin);
   const { bio } = getBioReducer;
-  const { pic } = getPicReducer;
+  const { pic,error } = getPicReducer;
   const { userInfo } = userSignInReducer;
 
   useEffect(() => {
-      dispatch(getBio());
-      dispatch(userPic());
+      dispatch(getBio(userInfo.user_id));
+      dispatch(userPic(userInfo.user_id));
   }, [])
+
+  useEffect(() => {
+    if(!userInfo){
+      history.push('/signin');
+    }
+  }, [userInfo])
 
   const uploadAvatar = (e) => {
     const selectedFile = e.target.files[0];
     const image = new FormData();
     image.append('image', selectedFile);
     dispatch(uploadPic(image));
+    setSubmitted(true);
   }
 
   const submitBio = () => {

@@ -28,11 +28,10 @@ const createList = (title, songs) => async (dispatch, getState) => {
     }
   }
 
-  const allLists = () => async (dispatch) => {
+  const allLists = (page, searchTerm) => async (dispatch) => {
     try {
-      
       dispatch({ type: ALL_LIST_REQUEST, payload: {} });
-      const { data } = await Axios.get("http://127.0.0.1:5000/alllists", {},{});
+      const { data } = await Axios.get("http://127.0.0.1:5000/alllists/"+page+"?term="+searchTerm, {},{});
       dispatch({ type: ALL_LIST_SUCCESS, payload: data });
     } catch (error) {
       console.log(error.response);
@@ -51,6 +50,7 @@ const createList = (title, songs) => async (dispatch, getState) => {
       dispatch({ type: SINGLE_LIST_FAIL, payload: error.message });
     }
   }
+
 
 export {
   createList,

@@ -1,40 +1,42 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
-import { allLists } from "../actions/listActions";
+import { allEvents } from "../actions/eventActions";
 import Pagination from '@material-ui/lab/Pagination';
-import CardList from "../components/CardList";
+import CardEvent from "../components/CardEvent.js";
 import SearchBar from "material-ui-search-bar";
 import { useState } from 'react';
 
-function Lists(props) {
+function Events(props) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = useState(1);
   const dispatch = useDispatch();
-  const allListReducer = useSelector((state) => state.allList);
-  const { lists,count } = allListReducer;
+  const allEventReducer = useSelector((state) => state.allEvent);
+  const { events,count } = allEventReducer;
 
   useEffect(() => {
-    dispatch(allLists(page,searchTerm));
+    dispatch(allEvents(page,searchTerm));
   }, [page])
 
   const fetch = (searchTerm) => {
     console.log(searchTerm);
     setPage(1);
-    dispatch(allLists(page,searchTerm));
+    dispatch(allEvents(page, searchTerm));
   }
-
+  
+  
   const handleChange = (event, value) => {
     setPage(value);
   };
 
   let res = null;
-  if(lists){
-    res = lists['lists'].map((list) => (
+  if(events){
+    res = events['events'].map((event,idx) => (
       <Col xs="4" className="d-flex justify-content-center align-items-center">
-          <CardList title={list.title} id={list.id} user_id = {list.user_id}/>
+          <CardEvent key={idx} headline={event.headline} id={event.id} name={event.users[0]?event.users[0].username:"no one"} user_id = {event.users[0]?event.users[0].id:1}/>
       </Col>));
   }
+  console.log(count);
   return(
   <div style={{marginTop: "80px", height:"750px"}}>
       <Container fluid>
@@ -56,4 +58,4 @@ function Lists(props) {
   </div>)
   }
 
-export default Lists;
+export default Events;
