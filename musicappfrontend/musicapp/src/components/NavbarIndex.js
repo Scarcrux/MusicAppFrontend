@@ -8,10 +8,18 @@ import {
   Nav,
   NavItem,
   NavLink,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
   NavbarText
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { logout } from '../actions/userActions.js';
+import Avatar from '@material-ui/core/Avatar';
+import { makeStyles } from '@material-ui/core/styles';
+import { userPic } from '../actions/userActions';
+import { useEffect } from 'react';
 
 const attributes = {
   background: "black",
@@ -23,28 +31,55 @@ const attributes = {
   height: "80px"
 }
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    '& > *': {
+      margin: theme.spacing(1),
+    },
+  },
+  small: {
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+  },
+}));
+
 const NavbarIndex = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
+  const getPicReducer = useSelector((state) => state.userPic);
+  const { pic } = getPicReducer;
   const dispatch = useDispatch();
+  const classes = useStyles();
 
   const toggle = () => setIsOpen(!isOpen);
+
+  useEffect(() => {
+    if(userInfo){
+      dispatch(userPic(userInfo.user_id));
+    }
+}, [])
 
   const handleLogout = (e) => {
     e.preventDefault();
     dispatch(logout());
   }
 
-  console.log(userInfo);
+  let path=null;
+  if(pic)
+  {
+    path = "http://127.0.0.1:5000/"+pic.replaceAll("\\","/");
+    console.log(path);
+  } 
 
   return (
     <div>
       <Navbar style={attributes} className="navbar top navbar-expand-md navbar-light bg-faded">
-        <NavbarBrand href="/" style={{color: "#e67e22", fontSize: "35px", marginBottom: "10px"}}>Tangerine</NavbarBrand>
+        <NavbarBrand href="/" style={{color: "#e67e22", fontSize: "40px", marginBottom: "10px"}}>Tangerine</NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
-          <Nav className="mr-auto" navbar>
+          <Nav className="mr-auto" navbar style={{fontSize: "18px"}}>
             <NavItem>
               <NavLink href="/lists" style={{color: "#F08080"}}>PlayList</NavLink>
             </NavItem>
@@ -58,15 +93,34 @@ const NavbarIndex = (props) => {
               {userInfo ? <NavLink tag={Link} to="/profile" style={{color: "#F08080"}}>Profile</NavLink> : null}
             </NavItem>
           </Nav>
-          <Nav>
+          <Nav style={{fontSize: "18px"}}>
             <NavItem>
-              {userInfo ? <NavLink tag={Link} to="/" onClick={(e)=>{handleLogout(e)}} style={{color: "#F08080"}}>Logout</NavLink> : <NavLink tag={Link} to="/signin" style={{color: "#F08080"}}>Sign In</NavLink>}
+              {!userInfo ? <NavLink tag={Link} to="/signin" style={{color: "#F08080"}}>Sign In</NavLink>:null}
             </NavItem>
           </Nav>
-          <NavbarText style={{color: "#F08080"}}>
-            {userInfo ? (userInfo.username) : ("Guest")}
+          {userInfo && <Nav>
+          <UncontrolledDropdown nav inNavbar style={{marginTop:"28px"}}>
+              <DropdownToggle nav caret>
+              {path?<Avatar src={path} className={classes.small} />:
+              <Avatar src="/static/images/avatar/1.jpg" className={classes.small} />}
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem>
+                <NavLink tag={Link} to="/inbox">Inbox</NavLink>
+                </DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem>
+                <NavItem>
+                <NavLink tag={Link} to="/" onClick={(e)=>{handleLogout(e)}}>Logout</NavLink>
+                </NavItem>
+                </DropdownItem>
+              </DropdownMenu>
+          </UncontrolledDropdown>
+          </Nav>}
+          </Collapse>
+          <NavbarText style={{color: "#F08080", fontSize: "18px", marginRight:"40px"}}>
+            {userInfo ? userInfo.username:("Guest")}
           </NavbarText>
-        </Collapse>
       </Navbar>
     </div>
   );

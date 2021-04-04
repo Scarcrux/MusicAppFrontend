@@ -3,9 +3,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -14,11 +12,21 @@ import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { register } from '../actions/userActions';
 import { createAddress } from '../actions/addressActions';
+import MuiAlert from '@material-ui/lab/Alert';
+import { useEffect } from 'react';
+import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%'
+  },
   paper: {
-    marginTop: theme.spacing(15),
+    marginTop: theme.spacing(13),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -45,20 +53,34 @@ export default function SignUp() {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [zip, setZip] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const createAddressReducer = useSelector((state) => state.createAddress);
+  const { addressId } = createAddressReducer;
+  const userRegisterReducer = useSelector((state) => state.userRegister);
+  const { error, success } = userRegisterReducer;
+  const history = useHistory();
   const dispatch = useDispatch();
-  const createAddressReducer = useSelector(state => state.createAddress);
-  const { loading, addressId, error } = createAddressReducer;
-  let history = useHistory();
 
+  useEffect(() => {
+    console.log(addressId);
+    if(success){
+      alert("Register success! Please check your email to confirm your registeration.");
+      history.go(-1);
+    }
+    if(addressId){
+      dispatch(register(username, email, password, null, addressId));
+    }
+  }, [addressId, success])
+  
   const submitHandler = (e) => {
     e.preventDefault();
+    setSubmitted(true);
     dispatch(createAddress(streetname, city, state, zip));
-    dispatch(register(username, email, password, null, addressId));
-    history.go(-1);
   }
 
   return (
-    <div style={{height:"600px"}}>
+    <div style={{minHeight:"750px"}} className={classes.root}>
+    {error && submitted && <Alert style={{marginTop:"80px"}} severity="error">{error}</Alert>}
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
@@ -162,8 +184,8 @@ export default function SignUp() {
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="#" variant="body2">
-                Already have an account? Sign in
+            <Link to={'/signin'} variant="body2">
+                {"Already have an account? Sign in."}
               </Link>
             </Grid>
           </Grid>

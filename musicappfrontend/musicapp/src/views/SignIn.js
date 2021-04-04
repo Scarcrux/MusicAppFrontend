@@ -5,7 +5,8 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import { Link } from "react-router-dom";
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
+import { useEffect } from 'react';
+import Axios from "axios";
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -14,10 +15,15 @@ import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { signin } from '../actions/userActions';
 import { useHistory } from "react-router-dom";
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(20),
+    marginTop: theme.spacing(14),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -39,18 +45,43 @@ export default function SignIn() {
   const classes = useStyles();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [email, setEmail] = useState("");
+  const userSignInReducer = useSelector((state) => state.userSignin);
+  const { error, userInfo } = userSignInReducer;
+
   const dispatch = useDispatch();
   const history = useHistory();
 
+  useEffect(() => {
+    if(userInfo){
+    history.go(-1);
+    }
+  }, [userInfo])
+  
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(signin(username, password));
-    history.go(-1);
+    setSubmitted(true);
+  }
+
+  async function resendConfirmation(e) {
+    e.preventDefault();
+    try{
+      let response = await Axios.post("http://127.0.0.1:5000/reconfirm", {email}, {
+      });
+      }catch(error){
+        console.log(error.response);
+      }
   }
 
   return (
-    <div style={{height:"490px"}}>
+    <div style={{minHeight:"650px"}}>
     <Container component="main" maxWidth="xs">
+      {error && submitted && <Alert style={{marginTop:"80px"}} severity="error">{error}</Alert>}
+      {error=='The user has not confirmed registration.' && <div><TextField margin="normal" label="Please enter your email:" onChange={(e) => setEmail(e.target.value)}></TextField>
+      <Button variant="contained" color="primary" style={{textAlign:"center", marginTop:"20px"}} 
+      onClick={resendConfirmation}>Resend the confirmation</Button></div>}
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>

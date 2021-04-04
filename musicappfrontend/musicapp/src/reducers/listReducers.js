@@ -27,7 +27,7 @@ import {
       case ALL_LIST_REQUEST:
         return { loading: true };
       case ALL_LIST_SUCCESS:
-        return { loading: false, lists: action.payload};
+        return { loading: false, lists: action.payload, count: action.payload.count};
       case ALL_LIST_FAIL:
         return { loading: false, error: action.payload };
       default: return state;

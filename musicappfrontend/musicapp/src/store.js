@@ -4,11 +4,16 @@ import {
   userSigninReducer,
   userRegisterReducer,
   userBioReducer,
-  userPicReducer,
+  userPicReducer
 } from './reducers/userReducers';
 import {
   createAddressReducer
 } from './reducers/addressReducers';
+import {
+  allEventReducer,
+  createEventReducer,
+  singleEventReducer
+} from './reducers/eventReducers';
 import {
   allListReducer, createListReducer, singleListReducer
 } from './reducers/listReducers';
@@ -26,8 +31,11 @@ const rootReducer = combineReducers({
   userRegister: userRegisterReducer,
   createAddress: createAddressReducer,
   createList: createListReducer,
+  createEvent: createEventReducer,
   allList: allListReducer,
+  allEvent: allEventReducer,
   singleList: singleListReducer,
+  singleEvent: singleEventReducer,
   userBio: userBioReducer,
   userPic: userPicReducer
 });

@@ -1,5 +1,6 @@
 import Axios from "axios";
 import Cookie from 'js-cookie';
+import { Redirect } from "react-router-dom";
 import {
   USER_LOGOUT_REQUEST,
   USER_LOGOUT_SUCCESS,
@@ -47,7 +48,8 @@ const register = (username, email, password, bio, addressId) => async (dispatch)
     const { data } = await Axios.post("http://127.0.0.1:5000/register", { username, email, password, bio, address_id: addressId});
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
   } catch (error) {
-    dispatch({ type: USER_REGISTER_FAIL, payload: error.message });
+    console.log(error.response.data['message']);
+    dispatch({ type: USER_REGISTER_FAIL, payload: error.response.data['message'] });
   }
 }
 
@@ -58,7 +60,7 @@ const signin = (username, password) => async (dispatch) => {
     dispatch({ type: USER_SIGNIN_SUCCESS, payload: data });
     Cookie.set('userInfo', JSON.stringify(data));
   } catch (error) {
-    dispatch({ type: USER_SIGNIN_FAIL, payload: error.message });
+    dispatch({ type: USER_SIGNIN_FAIL, payload: error.response.data['message'] });
   }
 }
 
@@ -67,7 +69,7 @@ const updateBio = (bio) => async (dispatch, getState) => {
   const user_id = userInfo.user_id;
   dispatch({ type: UPDATE_BIO_REQUEST});
   try {
-    const { data } = await Axios.post("http://127.0.0.1:5000/updatebio/"+user_id, { bio }, {
+    const { data } = await Axios.put("http://127.0.0.1:5000/updatebio/"+user_id, { bio }, {
       headers: {
         "Authorization": ' Bearer ' + userInfo.access_token
       }
@@ -75,13 +77,11 @@ const updateBio = (bio) => async (dispatch, getState) => {
     dispatch({ type: UPDATE_BIO_SUCCESS, payload: data });
   } catch (error) {
     console.log(error.response)
-    dispatch({ type: UPDATE_BIO_FAIL, payload: error.message });
+    dispatch({ type: UPDATE_BIO_FAIL, payload: error.response.data['message'] });
   }
 }
 
-const getBio = () => async (dispatch, getState) => {
-  const { userSignin: { userInfo } } = getState();
-  const user_id = userInfo.user_id;
+const getBio = (user_id) => async (dispatch) => {
   dispatch({ type: GET_BIO_REQUEST});
   try {
     const { data } = await Axios.get("http://127.0.0.1:5000/userbio/"+user_id, {});
@@ -109,12 +109,10 @@ const uploadPic = (data1) => async (dispatch, getState) => {
   }
 }
 
-const userPic = () => async (dispatch, getState) => {
-  const { userSignin: { userInfo } } = getState();
-  const user_id = userInfo.user_id;
+const userPic = (user_id) => async (dispatch, getState) => {
   dispatch({ type: GET_PIC_REQUEST});
   try {
-    const { data } = await Axios.get("http://127.0.0.1:5000/avatar/1", {});
+    const { data } = await Axios.get("http://127.0.0.1:5000/avatar/"+user_id, {});
     dispatch({ type: GET_PIC_SUCCESS, payload: data });
   } catch (error) {
     console.log(error.response);
