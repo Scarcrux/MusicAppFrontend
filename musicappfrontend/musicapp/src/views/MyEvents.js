@@ -26,24 +26,23 @@ function MyEvents() {
     async function MyEvents() {
     try{
         let response = await Axios.get("http://127.0.0.1:5000/signedupevents/"+userInfo.user_id, {},{});
-        console.log(response.data)
         let temp=[];
         response.data.map((e)=>{
-            temp.push({headline: e.headline, id: e.id})
+            temp.push(e)
         });
         setEvents(temp);
-        console.log(events)
         }catch(error){
           console.log(error.response);
         }
       }
-
-    const res = events.map((e)=>
+    let res=null; 
+    if(events){   
+    res = events.map((e)=>
         <Col xs="4" className="d-flex justify-content-center align-items-center">
-        <CardEvent headline={e.headline} id={e.id}/>
+        <CardEvent headline={e.headline} id={e.id} user_id={e.users[0]?e.users[0].id:null} name={e.users[0]?e.users[0].username:"no one"}/>
         </Col>
     );
-
+    }
     return(
     <div style={{minHeight:"562px",marginTop:"80px"}}>
     <h1 style={{textAlign:"center", marginTop:"120px", fontSize:"35px", padding:"20px"}}>

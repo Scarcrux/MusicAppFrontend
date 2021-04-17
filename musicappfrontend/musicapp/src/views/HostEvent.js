@@ -45,7 +45,6 @@ function HostEvent() {
    </div>
    <main className="btn-toggle">
       <h3>Create Your Event:</h3>
-      <h6>Give people a little description of your event:</h6>
       <Form>
           <Form.Group>
           <Form.Label>Headline</Form.Label>

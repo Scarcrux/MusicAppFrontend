@@ -7,6 +7,7 @@ import CardList from "../components/CardList";
 import Axios from "axios";
 import { useHistory } from "react-router-dom";
 
+
 function MyLists() {
     const [mylists, setMyLists] = useState([]);
     const userSignInReducer = useSelector((state) => state.userSignin);
@@ -25,7 +26,11 @@ function MyLists() {
 
     async function MyLists() {
     try{
-        let response = await Axios.get("http://127.0.0.1:5000/mylist/"+userInfo.user_id, {},{});
+        let response = await Axios.get("http://127.0.0.1:5000/mylist", {
+            headers: {
+                "Authorization": ' Bearer ' + userInfo.refresh_token
+              }
+        });
         console.log(response.data)
         let temp=[];
         response.data.lists.map((e)=>{
@@ -39,7 +44,7 @@ function MyLists() {
 
     const res = mylists.map((e)=>
         <Col xs="4" className="d-flex justify-content-center align-items-center">
-          <CardList title={e.title} id={e.id}/>
+          <CardList title={e.title} id={e.id} private={true} mylist={MyLists}/>
         </Col>
     );
 

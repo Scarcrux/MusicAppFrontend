@@ -36,7 +36,7 @@ function Lists(props) {
       </Col>));
   }
   return(
-  <div style={{marginTop: "80px", height:"750px"}}>
+  <div style={{marginTop: "80px", height:"820px"}}>
       <Container fluid>
         <Row className="d-flex justify-content-center align-items-center">
         <SearchBar
@@ -49,7 +49,7 @@ function Lists(props) {
         <Row>
           {res}
         </Row>  
-        <Row style={{marginTop:"60px"}}  className="d-flex justify-content-center align-items-center">
+        <Row style={{marginTop:"50px"}}  className="d-flex justify-content-center align-items-center">
         <Pagination  count={Math.ceil(count/6)} page={page} onChange={handleChange} variant="outlined" shape="rounded" />
         </Row>
       </Container>

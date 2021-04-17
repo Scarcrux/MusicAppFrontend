@@ -19,12 +19,15 @@ import {
 } from './reducers/listReducers';
 
 import Cookie from 'js-cookie';
+import { allMessagesReducer } from './reducers/messageReducer';
 
 const userInfo = Cookie.getJSON('userInfo') || null;
+const savedMessages = window.localStorage.getItem('messages');
+let messages = [];
 
-const initialState = {
-  userSignin: { userInfo }
-};
+if(savedMessages){ 
+    messages=JSON.parse(savedMessages);
+}
 
 const rootReducer = combineReducers({
   userSignin: userSigninReducer,
@@ -34,11 +37,17 @@ const rootReducer = combineReducers({
   createEvent: createEventReducer,
   allList: allListReducer,
   allEvent: allEventReducer,
+  allMessages: allMessagesReducer,
   singleList: singleListReducer,
   singleEvent: singleEventReducer,
   userBio: userBioReducer,
   userPic: userPicReducer
 });
+
+const initialState = {
+  userSignin: { userInfo },
+  allMessages: { messages }
+};
 
 const storeEnhancers = window.REDUX_DEVTOOLS_EXTENSION_COMPOSE || compose;
 

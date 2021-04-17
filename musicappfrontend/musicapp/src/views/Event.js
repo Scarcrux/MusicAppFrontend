@@ -14,12 +14,15 @@ import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.css';
 import 'primeflex/primeflex.css';
+import background from '../assets/img/event.jpg';
+import LocationCityIcon from '@material-ui/icons/LocationCity';
+import EventIcon from '@material-ui/icons/Event';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-      background: 'linear-gradient(45deg, #f5d364 30%, #fd9f85 90%)',
-      color: 'black',
-      padding: '0 30px',
+      background: `url(${background})`,
+      backgroundSize: 'cover',
+      zIndex: '1'
     },
     modal: {
         display: 'flex',
@@ -102,27 +105,25 @@ function Event(props) {
   };
 
   return(
-  <div style={{marginTop:"78px", minHeight:"562px", color:"#800000	"}} className="card" className={classes.root}>
-        {event?<div style={{margin:"20px",textAlign:"center"}}>
-            <div style={{fontSize:"70px", paddingTop:"120px", fontFamily:"Verdana"}}>{event.headline}</div>
-            {users[0] && <div style={{fontSize:"18px"}}>Host by: {users[0].username}</div>}
-            <div style={{fontSize:"20px", marginTop:"20px"}}>Date: {event.date.substring(0,16).replace("T"," ")}</div>
-            {address && 
-            <div style={{fontSize:"20px"}}>Address: {address.streetName}{", "}{address.city}{", "}{address.state}{", "}{address.zip}</div>}
+  <div style={{marginTop:"78px", minHeight:"562px", color:"white"}} className="card" className={classes.root}>
+        {event?<div style={{margin:"20px"}}>
+            <div style={{fontSize:"90px", paddingTop:"80px", marginLeft:"50px", fontFamily:"Verdana", fontWeight:"bold"}}>{event.headline}</div>
+            {users[0] && <div style={{fontSize:"18px", marginLeft:"50px"}}>Hosted by: {users[0].username}</div>}
+            <div style={{fontSize:"20px", marginTop:"20px", marginLeft:"50px"}}><EventIcon style={{marginBottom:"4px"}}/>{event.date.substring(0,16).replace("T"," ")}{"        "}<LocationCityIcon  style={{marginBottom:"4px"}}/>{address.streetName}{", "}{address.city}{", "}{address.state}{", "}{address.zip}</div>
             {userInfo && event.user_id!=userInfo.user_id && !attended?
-            <Button variant="contained" color="primary" style={{marginTop:"30px"}} onClick={signUp}>Attend</Button>:
-            <div style={{margin:"10px"}}>
+            <Button variant="contained" color="primary" style={{marginTop:"30px", marginLeft:"50px"}} onClick={signUp}>Attend</Button>:
+            <div style={{margin:"10px",marginLeft:"50px"}}>
             {userInfo && <div><CheckIcon></CheckIcon>Signed Up</div>}
-            <div style={{margin:"10px"}}>
-            {userInfo && event.user_id!=userInfo.user_id?<Button variant="contained" color="secondary" style={{marginLeft:"20px"}} 
+            <div style={{marginTop:"10px"}}>
+            {userInfo && event.user_id!=userInfo.user_id?<Button variant="contained" color="secondary" 
             onClick={undoSignUp}>Undo Sign Up</Button>:null}
             </div>
             </div>
             }
         </div>:null}
         {event && 
-        <div style={{textAlign:"center"}}>
-        <div style={{marginTop:"20px"}}> <Button variant="primary" onClick={handleOpen} style={{fontSize:"12px"}}>Click For More Details</Button></div>   
+        <div>
+        <div style={{marginTop:"20px"}}> <Button variant="primary" onClick={handleOpen} style={{fontSize:"12px",marginLeft:"55px", color:"white"}}>Click For More Details</Button></div>   
         <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"

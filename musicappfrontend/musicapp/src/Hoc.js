@@ -2,15 +2,21 @@ import React from 'react';
 import { logout } from './actions/userActions';
 import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
+import jwt_decode from 'jwt-decode';
 
 export default function(ComposedClass){
-
     class Component extends React.Component {
       constructor(props) {
         super(props);
+        let time = Number.POSITIVE_INFINITY;
+        if(this.props.userInfo){
+          let decodedToken = jwt_decode(this.props.userInfo.access_token);
+          let currentDate = new Date();
+          time = decodedToken.exp * 1000 - currentDate.getTime();
+        }
         this.state = {
-          warningTime: 1100000,
-          signoutTime: 1200000
+          warningTime: time-1000*60,
+          signoutTime: time
         };
       }
 
@@ -18,19 +24,16 @@ export default function(ComposedClass){
         this.setTimeout();
       }
 
-      clearTimeoutFunc = () => {
-        if (this.warnTimeout) clearTimeout(this.warnTimeout);
-        if (this.logoutTimeout) clearTimeout(this.logoutTimeout);
-      };
-
       setTimeout = () => {
-        this.warnTimeout = setTimeout(this.warn, this.state.warningTime);
-        this.logoutTimeout = setTimeout(this.logout, this.state.signoutTime);
-      };
-
-      resetTimeout = () => {
-        this.clearTimeoutFunc();
-        this.setTimeout();
+        console.log(this.state.signoutTime)
+        if(this.state.warningTime>0){
+          this.warnTimeout = setTimeout(this.warn, this.state.warningTime);
+        }
+        if(this.state.signoutTime>0){
+          this.logoutTimeout = setTimeout(this.logout, this.state.signoutTime);
+        }else{
+          this.logout();
+        }
       };
 
       warn = () => {

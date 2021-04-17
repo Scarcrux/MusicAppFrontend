@@ -81,7 +81,7 @@ const NavbarIndex = (props) => {
         <Collapse isOpen={isOpen} navbar>
           <Nav className="mr-auto" navbar style={{fontSize: "18px"}}>
             <NavItem>
-              <NavLink href="/lists" style={{color: "#F08080"}}>PlayList</NavLink>
+              <NavLink href="/lists" style={{color: "#F08080"}}>Playlist</NavLink>
             </NavItem>
             <NavItem>
               <NavLink href="/events" style={{color: "#F08080"}}>Event</NavLink>

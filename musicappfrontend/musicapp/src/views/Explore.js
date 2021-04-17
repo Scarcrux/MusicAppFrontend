@@ -6,6 +6,12 @@ import { useSelector } from 'react-redux';
 import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardText, MDBRow, MDBCol, MDBIcon } from
 'mdbreact';
 import { makeStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles({
     root: {
@@ -20,11 +26,14 @@ const useStyles = makeStyles({
 function Explore() {
     const classes = useStyles();
     const [lists, setLists] = useState([]);
+    const [events, setEvents] = useState([]);
+    const [message, setMessage] = useState("");
     const userSignin = useSelector((state) => state.userSignin);
     const { userInfo } = userSignin;
 
     useEffect(() => {
         recommendateList();
+        recommendateEvent();
     }, [])
     
     async function recommendateList() {
@@ -40,25 +49,71 @@ function Explore() {
         });
         setLists(temp);
         }catch(error){
-          console.log(error.response);
+          if(error.response){
+            setMessage(error.response['data']['message']);
+          }
         }
     }
 
-  const size = lists.length>2?4:lists.length;
-  const res = lists.map((e)=>
-    <MDBCol col={size}>
-    <MDBCard className="rounded mb-0" style={{width:"680px"}}>
+    async function recommendateEvent() {
+      try{
+      let response = await Axios.get("http://127.0.0.1:5000/recommendateevent/"+userInfo.user_id, {
+        headers: {
+          "Authorization": ' Bearer ' + userInfo.access_token
+        }
+      });
+      let temp = [];
+      response.data.map(e=>{
+          temp.push({headline: e.headline, id: e.id});
+      });
+      setEvents(temp);
+      }catch(error){
+        console.log(error.response);
+      }
+      }
+    let res=null;
+    if(lists.length>0){
+      res = lists.map((e)=>
+        <MDBCol>
+        <MDBCard className="rounded mb-0" style={{width:"550px", margin:"20px"}}>
+        <div className={classes.root}>
+            <h2 style={{margin:"50px", textAlign:"center"}}>{e.title}</h2>
+        </div>
+          <MDBCardBody cascade className='text-center'>
+            <MDBCardText>
+            <Link to={`/list/${e.id}`}>Show Detail</Link>
+            </MDBCardText>
+          </MDBCardBody>
+        </MDBCard>
+        </MDBCol>
+        );
+    }else{
+      console.log(message);
+      if(message=="The user hasn't liked any list"){
+        res = <MDBCol><Alert severity="error">You haven't liked any playlist. Like a list and enjoy the recommendation.</Alert></MDBCol>
+      }else{
+        res = <MDBCol><Alert severity="error">You liked every playlist available. Please check back later.</Alert></MDBCol>
+      }
+    }
+    let res1 = null;
+    if(events.length){
+    res1 = events.map((e)=>
+    <MDBCol>
+    <MDBCard className="rounded mb-0" style={{width:"550px", margin:"20px"}}>
     <div className={classes.root}>
-        <h2 style={{padding:"50px", textAlign:"center"}}>{e.title}</h2>
+        <h2 style={{padding:"50px", textAlign:"center"}}>{e.headline}</h2>
     </div>
       <MDBCardBody cascade className='text-center'>
         <MDBCardText>
-        Check Details
+        <Link to={`/event/${e.id}`}>Show Detail</Link>
         </MDBCardText>
       </MDBCardBody>
     </MDBCard>
     </MDBCol>
     );
+    }else{
+      res1 = <MDBCol><Alert severity="error">No new events in your zip code available. Please check back later.</Alert></MDBCol>
+    }
 
   return(
     <div style={{marginTop: "80px", minHeight:"652px"}} >
@@ -69,7 +124,7 @@ function Explore() {
         {!userInfo&&<div style={{marginTop:"50px", textAlign:"center"}}>Sign in for personal recommendation</div>}
         </div>
         <MDBRow style={{margin:"30px", textAlign:"center"}}>
-        {res}
+        {userInfo && res}
         </MDBRow>
         <div>
         <div style={{textAlign:"center", padding:"50px"}}>
@@ -79,7 +134,7 @@ function Explore() {
         {!userInfo&&<div style={{marginTop:"50px", textAlign:"center"}}>Sign in for personal recommendation</div>}
         </div>
         <MDBRow style={{margin:"30px"}}>
-        {res}
+        {userInfo && res1}
         </MDBRow>
         <div></div>
         </div>
