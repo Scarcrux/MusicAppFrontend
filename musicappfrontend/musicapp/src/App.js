@@ -6,9 +6,38 @@ import {
  import {
   NavbarIndex, FooterPage
  } from './components/';
- import HOC from './Hoc';
+import HOC from './Hoc';
+import { useEffect, useState } from 'react';
+import { ADD_MESSAGE } from "./constants/messageConstants";
+import { useDispatch, useSelector } from 'react-redux';
+import io from 'socket.io-client';
 
 function App() {
+  const dispatch = useDispatch();
+  const [current, setCurrent] = useState("");
+  const userSignInReducer = useSelector((state) => state.userSignin);
+  const { userInfo } = userSignInReducer;
+  const socket = io('http://127.0.0.1:5000');  
+  useEffect(() => {
+    socket.on('new_private_message', function(msg) {
+      const item = {
+            date: new Date().toLocaleString(),
+            message: msg['message'],
+            from: msg['from'],
+            to: msg['to']
+        }
+      dispatch({ type: ADD_MESSAGE, payload: item });
+    });
+    }, [])
+  useEffect(() => {
+    if(userInfo){
+      socket.emit('join_chat', userInfo.username);
+      setCurrent(userInfo.username);
+    }
+    else{
+      socket.emit('leave_chat', current);
+    }
+  }, [userInfo])
   return (
     <div className="App">
       <header className="App-header">
@@ -29,7 +58,7 @@ function App() {
         <Route exact path="/mylikes" component={HOC(MyLikes)} />
         <Route exact path="/myevents" component={HOC(MyEvents)} />
         <Route exact path="/explore" component={HOC(Explore)} />
-        <Route exact path="/inbox" component={HOC(Inbox)} />
+        <Route exact path="/inbox" component={HOC(props => <Inbox {...props} socket={socket} />)} />
         <FooterPage/>
       </BrowserRouter>
       </header>

@@ -55,8 +55,10 @@ function UserProfile() {
   const { userInfo } = userSignInReducer;
 
   useEffect(() => {
-      dispatch(getBio(userInfo.user_id));
-      dispatch(userPic(userInfo.user_id));
+      if(userInfo){
+        dispatch(getBio(userInfo.user_id));
+        dispatch(userPic(userInfo.user_id));
+      }
   }, [])
 
   useEffect(() => {

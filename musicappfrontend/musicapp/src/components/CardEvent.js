@@ -10,7 +10,8 @@ import { Link } from "react-router-dom";
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: 300,
+    width: 300,
+    height:280,
     marginBottom: 20
   },
 });
@@ -27,9 +28,14 @@ export default function CardEvent(props) {
           image="https://joevandello.files.wordpress.com/2012/11/cocktailparty1.jpg"
         />
         <CardContent>
-        <Typography gutterBottom variant="h5">
+          {props.headline.length>23?
+          <Typography gutterBottom variant="h6">
+          {props.headline}
+          </Typography>:
+          <Typography gutterBottom variant="h5">
           {props.headline}
           </Typography>
+          }
           {props.user_id && <Typography gutterBottom variant="h7">
           Host By: <Link to={`/profile/${props.user_id}`}>{props.name}</Link>
           </Typography>}

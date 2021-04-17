@@ -6,13 +6,14 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import { DataGrid } from '@material-ui/data-grid';
 import { useDispatch } from 'react-redux';
 import { createList } from '../actions/listActions';
 import { useHistory } from "react-router-dom";
 import Grid from '@material-ui/core/Grid';
 import { useSelector } from 'react-redux';
+import { Form } from 'react-bootstrap';
+import { Col } from 'reactstrap';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -32,17 +33,10 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 700,
-  },
-});
-
 function CreateList() {
   const [songs, setSongs] = useState([]);
   const [title, setTitle] = useState("");
   const [id, setId] = useState(1);
-  const classes = useStyles();
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
   let history = useHistory();
@@ -75,8 +69,8 @@ function CreateList() {
     history.go(-1);
   }
   
-  const columns = [{ field: 'title', headerName: 'Song Name', width: 480 },
-  { field: 'artist', headerName: 'Song Title', width: 480 }]
+  const columns = [{ field: 'title', headerName: 'Song Name', width: 590 },
+  { field: 'artist', headerName: 'Song Title', width: 590 }]
 
   return(
    <div className="app">
@@ -84,10 +78,20 @@ function CreateList() {
    <Sidebar/>
    </div>
    <main className="btn-toggle">
-      <h3>Create Your List By Adding Song Title And Artist</h3>
-      <h6>Give people a little description of your playlist:</h6>
-      <TextareaAutosize style={{height:"80px", width:"1000px"}} onChange={(e) => {setTitle(e.target.value)}}/>
-   <CreateSong addSong={addSong}/>
+      <h3>Create Your List:</h3>
+      <div>
+      <Form>
+      <Form.Row>
+          <Col>
+          Title
+          <Form.Control placeholder="Title" onChange={(e)=>{setTitle(e.target.value)}} value={title}/>
+          </Col>
+        </Form.Row>
+        </Form> 
+      </div>
+      <div>
+      <CreateSong addSong={addSong}/>
+      </div>
    <DataGrid rows={songs} columns={columns} pageSize={3}/>
    <Grid container justify="flex-end">
    <Button variant="primary" type="submit" onClick={submitList} style={{width:"120px"}}>Submit</Button>

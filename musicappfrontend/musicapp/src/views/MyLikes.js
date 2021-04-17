@@ -30,10 +30,10 @@ function MyLikes() {
         console.log(response.data)
         let temp=[];
         response.data.map((e)=>{
-            temp.push({title: e.title, id: e.id})
+            temp.push({title: e.title, id: e.id, user_id: e.user_id})
         });
         setLists(temp);
-        console.log(lists)
+        console.log(lists[0])
         }catch(error){
           console.log(error.response);
         }
@@ -41,7 +41,7 @@ function MyLikes() {
 
     const res = lists.map((e)=>
         <Col xs="4" className="d-flex justify-content-center align-items-center">
-        <CardList title={e.title} id={e.id}/>
+        <CardList title={e.title} id={e.id} user_id={e.user_id}/>
         </Col>
     );
 

@@ -64,7 +64,6 @@ function SingleList(props) {
       }
     });
     response = await response.data
-    console.log(response)
     setLike(response)
     }catch(error){
       console.log(error.response);
@@ -101,7 +100,6 @@ function SingleList(props) {
     try{
     let response = await Axios.get("http://127.0.0.1:5000/likedlist/"+props.id, {}, {
     });
-    console.log(response);
     let temp = [];
     response['data'].map((e)=>{
       temp.push({id:e['id'], username:e['username']});
@@ -136,7 +134,7 @@ function SingleList(props) {
                             <ListItemText style={{textAlign:"center"}}><Link to={`/profile/${e.id}`}>{e.username}</Link></ListItemText>
                             </ListItem>);
   return(
-  <div style={{marginTop: "80px", minHeight: "562px", marginLeft:"50px", marginRight:"50px", marginTop:"100px"}} >
+  <div style={{marginTop: "80px", height: "570px", marginLeft:"50px", marginRight:"50px", marginTop:"100px"}} >
         {list?<h1>{list.title}<div style={{float:"right"}} ><Heart isClick={like} onClick={clickLike}/></div></h1>:null}
         <TableContainer component={Paper}>
          <Table className={classes.table} aria-label="simple table">

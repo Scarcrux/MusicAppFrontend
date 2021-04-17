@@ -23,9 +23,10 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
 import Fab from '@material-ui/core/Fab';
 import SendIcon from '@material-ui/icons/Send';
-import io from 'socket.io-client';
 import { Navbar } from 'react-bootstrap';
 import ColoredCircle from "../components/ColoredCircle";
+import { useHistory } from "react-router-dom";
+import HOC from "../Hoc";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -60,60 +61,42 @@ const useStyles = makeStyles((theme) => ({
       }
   }));
 
-const socket = io('http://127.0.0.1:5000');       
 
-
-function Inbox() {
+function Inbox(props) {
     const [friends, setFriends] = useState([]);
     const [requests, setRequests] = useState([]);
     const userSignInReducer = useSelector((state) => state.userSignin);
     const { userInfo } = userSignInReducer;
+    const allMessagesReducer = useSelector((state) => state.allMessages);
+    const { messages } = allMessagesReducer;
     const classes = useStyles();
     const [expanded, setExpanded] = useState(false);
-    const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
     const [current, setCurrent] = useState("");
     const [onlineFriends, setOnlineFriend] = useState([]);
+    const history = useHistory();
 
     useEffect(() => {
-        const username = userInfo.username;
-        socket.emit('join_chat', username);
-        socket.emit('online_friends');
-        socket.on('new_private_message', function(msg) {
-            const item = {
-                date: new Date().toLocaleString(),
-                message: msg['message'],
-                author: msg['username']
-            }
-            setMessages(prevMessages => [...prevMessages,item]);
-        });
-        socket.on('users', function(msg) {
+        getPendingRequests();
+        props.socket.emit('online_friends');
+        props.socket.on('users', function(msg) {
             setOnlineFriend(msg['users']);
        });
     }, [])
 
     useEffect(() => {
-        setMessages([]);
-        loadMessages();
-    }, [current])
+        window.localStorage.setItem('messages', JSON.stringify(messages));
+    }, [messages])
 
     useEffect(() => {
-        window.localStorage.setItem('messages'+current, JSON.stringify(messages));
-    }, [messages])
+      if(!userInfo){
+        history.push('/signin');
+      }
+    }, [userInfo])
 
     const handleChange = (panel) => (event, isExpanded) => {
       setExpanded(isExpanded ? panel : false);
     };
-
-    const loadMessages = () =>{
-        let savedMessages = null;
-        if(current){
-            savedMessages = window.localStorage.getItem('messages'+current);
-        }
-        if (savedMessages) { 
-          setMessages(JSON.parse(savedMessages)||[]);
-        }
-      }
 
     async function getPendingRequests() {
         try{
@@ -127,7 +110,6 @@ function Inbox() {
             temp.push({name: e.from_user_name, id: e.from_user_id});
         });
         setRequests(temp);
-        console.log(requests);
         }catch(error){
           console.log(error.response);
         }
@@ -142,7 +124,6 @@ function Inbox() {
               }
         });
         let temp = [];
-        console.log(onlineFriends);
         response.data.map(e=>{
             if(e.user1_id==userInfo.user_id){
                 if(onlineFriends.includes(e.user2_name)){
@@ -182,13 +163,18 @@ function Inbox() {
       }
 
       const submitMessage = () =>{
-        socket.emit('private_message', {'username' : current, 'message' : message, 'self': userInfo.username});
+        if(!onlineFriends.includes(current)){
+          alert("This friend is not online currently.");
+        }else{
+          props.socket.emit('private_message', {'to' : current, 'message' : message, 'from': userInfo.username});
+        }
+        setMessage("");
       }
 
   return(
     <div style={{minHeight:"562px",marginTop:"80px"}} className={classes.root}>
         <div style={{marginLeft:"130px", marginTop:"120px", marginRight:"130px"}}>
-        <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')} onClick={getPendingRequests}>
+        <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1bh-content"
@@ -228,9 +214,6 @@ function Inbox() {
         <AccordionDetails>
         <Grid container component={Paper} className={classes.chatSection}>
             <Grid item xs={3} className={classes.borderRight500}>
-                <Grid item xs={12} style={{padding: '10px'}}>
-                    <TextField id="outlined-basic-email" label="Search" variant="outlined" fullWidth />
-                </Grid>
                 <Divider />
                 <List>
                     {friends.map(e=>
@@ -249,7 +232,7 @@ function Inbox() {
                 <Navbar.Brand>{current}</Navbar.Brand>
                 </Navbar>
                     {messages.map(e=>
-                        <ListItem key="1">{e.author==userInfo.username?
+                        <ListItem key="1">{userInfo && e.from==userInfo.username && e.to==current?
                             <Grid container>
                             <Grid item xs={12} align="right">
                                 <ListItemText>{e.date}</ListItemText>
@@ -257,7 +240,7 @@ function Inbox() {
                             <Grid item xs={12} align="right">
                                 <ListItemText>{e.message}</ListItemText>
                             </Grid>
-                            </Grid>:
+                            </Grid>:userInfo && e.from==current && e.to==userInfo.username?
                             <Grid container>
                             <Grid item xs={12} align="left">
                                 <ListItemText>{e.date}</ListItemText>
@@ -265,7 +248,7 @@ function Inbox() {
                             <Grid item xs={12} align="left">
                                 <ListItemText>{e.message}</ListItemText>
                             </Grid>
-                            </Grid>}
+                            </Grid>:null}
                         </ListItem>)
                     }
                 </List>

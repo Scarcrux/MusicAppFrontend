@@ -33,12 +33,12 @@ function Events(props) {
   if(events){
     res = events['events'].map((event,idx) => (
       <Col xs="4" className="d-flex justify-content-center align-items-center">
-          <CardEvent key={idx} headline={event.headline} id={event.id} name={event.users[0]?event.users[0].username:"no one"} user_id = {event.users[0]?event.users[0].id:1}/>
+          <CardEvent key={idx} headline={event.headline} id={event.id} name={event.users[0]?event.users[0].username:"no one"} user_id = {event.users[0]?event.users[0].id:null}/>
       </Col>));
   }
   console.log(count);
   return(
-  <div style={{marginTop: "80px", height:"750px"}}>
+  <div style={{marginTop: "80px", height:"820px"}}>
       <Container fluid>
         <Row className="d-flex justify-content-center align-items-center">
         <SearchBar
@@ -51,7 +51,7 @@ function Events(props) {
         <Row>
           {res}
         </Row>  
-        <Row style={{marginTop:"60px"}}  className="d-flex justify-content-center align-items-center">
+        <Row style={{marginTop:"50px"}}  className="d-flex justify-content-center align-items-center">
         <Pagination  count={Math.ceil(count/6)} page={page} onChange={handleChange} variant="outlined" shape="rounded" />
         </Row>
       </Container>

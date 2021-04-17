@@ -1,6 +1,5 @@
 import Axios from "axios";
 import Cookie from 'js-cookie';
-import { Redirect } from "react-router-dom";
 import {
   USER_LOGOUT_REQUEST,
   USER_LOGOUT_SUCCESS,
@@ -22,9 +21,8 @@ import {
   UPLOAD_PIC_FAIL,
   GET_PIC_REQUEST,
   GET_PIC_SUCCESS,
-  GET_PIC_FAIL
+  GET_PIC_FAIL,
 } from "../constants/userConstants";
-
 
 const logout = () => async (dispatch, getState) => {
   const { userSignin: { userInfo } } = getState();
@@ -59,7 +57,8 @@ const signin = (username, password) => async (dispatch) => {
     const { data } = await Axios.post("http://127.0.0.1:5000/signin", { username, password });
     dispatch({ type: USER_SIGNIN_SUCCESS, payload: data });
     Cookie.set('userInfo', JSON.stringify(data));
-  } catch (error) {
+}
+  catch (error) {
     dispatch({ type: USER_SIGNIN_FAIL, payload: error.response.data['message'] });
   }
 }
